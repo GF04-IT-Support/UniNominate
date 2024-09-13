@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id             String        @id @default(cuid()) @map("_id") 
+  name           String
+  email          String        @unique
+  hashedPassword String
+  role           AdminRole
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  reviewCategories String[]
+  reviews        Review[]
+  adminActions   AdminAction[]
+}
+
+model NominationForm {
+  id            String       @id @default(cuid()) @map("_id")
+  name          String       @unique
+  description   String
+  formStructure Json
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  nominations   Nomination[]
+}
+
+model Nomination {
+  id              String           @id @default(cuid()) @map("_id")
+  nominatorName   String
+  nominatorEmail  String
+  status          NominationStatus @default(DRAFT)
+  submissionData  Json?
+  token           String           @unique
+  isTokenValid    Boolean          @default(true)
+  expiresAt       DateTime
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  formId          String
+  form            NominationForm   @relation(fields: [formId], references: [id])
+  review          Review?
+}
+
+model Review {
+  id           String     @id @default(cuid()) @map("_id")
+  decision     Decision
+  comment      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  nominationId String     @unique
+  nomination   Nomination @relation(fields: [nominationId], references: [id])
+  reviewerId   String
+  reviewer     Admin      @relation(fields: [reviewerId], references: [id])
+}
+
+model AdminAction {
+  id         String   @id @default(cuid()) @map("_id")
+  actionType String
+  details    String
+  createdAt  DateTime @default(now())
+  adminId    String
+  admin      Admin    @relation(fields: [adminId], references: [id])
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  CATEGORY_MANAGER
+  REVIEWER
+}
+
+enum NominationStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+enum Decision {
+  APPROVE
+  REJECT
+}
