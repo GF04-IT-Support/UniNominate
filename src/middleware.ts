@@ -5,7 +5,7 @@ export default auth((req) => {
   const path = req.nextUrl.pathname;
   const isAuthenticated = !!req.auth;
 
-  // Public routes that should not be accessible when logged in
+
   const publicOnlyRoutes = ["/"];
 
   if (isAuthenticated) {

@@ -69,7 +69,7 @@ model AdminAction {
 
 enum AdminRole {
   SUPER_ADMIN
-  CATEGORY_MANAGER
+  NOMINATION_MANAGER
   REVIEWER
 }
 

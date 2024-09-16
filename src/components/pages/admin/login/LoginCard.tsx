@@ -100,10 +100,10 @@ const LoginCard: React.FC = () => {
             </Link>
           </div>
           <Button
-            color="primary"
             type="submit"
-            className="mt-8"
+            className="mt-8 bg-[#8B0000] text-white hover:bg-red-900"
             isLoading={isLoading}
+            radius="sm"
           >
             Login
           </Button>
