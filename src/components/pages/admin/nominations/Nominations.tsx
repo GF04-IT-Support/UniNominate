@@ -10,6 +10,7 @@ import {
 import React from "react";
 import { MdAdd, MdEdit } from "react-icons/md";
 import { NominationForm } from "@/types/nominationTypes";
+import NominationTable from "./NominationTable";
 
 interface NominationsProps {
   nominations: NominationForm[];
@@ -41,6 +42,7 @@ const Nominations: React.FC<NominationsProps> = ({ nominations }) => {
             <p className="text-sm font-semibold text-[#8B0000]">
               {nomination.description}
             </p>
+
             <div className="mt-2">
               <Link
                 href={`/admin/nominations/builder/${nomination.id}`}
@@ -55,6 +57,9 @@ const Nominations: React.FC<NominationsProps> = ({ nominations }) => {
                   Edit
                 </Button>
               </Link>
+              <div className="mt-4">
+                <NominationTable formId={nomination.id!} />
+              </div>
             </div>
           </AccordionItem>
         ))}

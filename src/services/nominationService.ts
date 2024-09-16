@@ -67,3 +67,20 @@ export async function getAllNominations() {
     throw new Error("Failed to get all nomination forms");
   }
 }
+
+export async function getNominationsForForm(formId: string) {
+  try {
+    const nominations = await prisma.nomination.findMany({
+      where: {
+        formId: formId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return nominations;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get nominations for the form");
+  }
+}

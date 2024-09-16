@@ -116,7 +116,7 @@ const NominationFormBuilder: React.FC<NominationFormBuilderProps> = ({
   if (!creator) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <Spinner className="text-[#8B0000]" />
+        <Spinner color="danger" />
       </div>
     );
   }

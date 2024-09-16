@@ -31,19 +31,20 @@ model NominationForm {
 }
 
 model Nomination {
-  id              String           @id @default(cuid()) @map("_id")
-  nominatorName   String
-  nominatorEmail  String
-  status          NominationStatus @default(DRAFT)
-  submissionData  Json?
-  token           String           @unique
-  isTokenValid    Boolean          @default(true)
-  expiresAt       DateTime
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  formId          String
-  form            NominationForm   @relation(fields: [formId], references: [id])
-  review          Review?
+  id                  String                    @id @default(cuid()) @map("_id")
+  nominatorName       String
+  nominatorEmail      String
+  requestStatus       NominationRequestStatus   @default(PENDING_APPROVAL)
+  submissionStatus    NominationSubmissionStatus @default(NOT_SUBMITTED)
+  submissionData      Json?
+  token               String                    @unique
+  isTokenValid        Boolean                   @default(true)
+  expiresAt           DateTime
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  formId              String
+  form                NominationForm            @relation(fields: [formId], references: [id])
+  review              Review?
 }
 
 model Review {
@@ -73,12 +74,18 @@ enum AdminRole {
   REVIEWER
 }
 
-enum NominationStatus {
-  DRAFT
-  PENDING
+enum NominationRequestStatus {
+  PENDING_APPROVAL
   APPROVED
   REJECTED
-  WITHDRAWN
+}
+
+enum NominationSubmissionStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
 }
 
 enum Decision {
