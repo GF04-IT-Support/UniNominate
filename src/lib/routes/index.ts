@@ -34,3 +34,26 @@ export const adminRoutes = [
     icon: MdSettings,
   },
 ];
+
+export const navRoutes = [
+  {
+    name: "Home",
+    path: "/",
+  },
+  {
+    name: "Nominations",
+    path: "/nominations",
+  },
+  {
+    name: "About",
+    path: "/about",
+  },
+  {
+    name: "FAQ",
+    path: "/faq",
+  },
+  {
+    name: "Contact",
+    path: "/contact",
+  },
+];
