@@ -4,15 +4,10 @@ import React, { useState } from "react";
 import { Card, CardBody, CardFooter, Button, Input } from "@nextui-org/react";
 import { FaTrophy, FaSearch } from "react-icons/fa";
 import RequestFormModal from "./RequestFormModal";
-
-interface NominationPosition {
-  id: number;
-  title: string;
-  description: string;
-}
+import { NominationForm } from "@prisma/client";
 
 interface NominationPositionsListProps {
-  positions: NominationPosition[];
+  positions: NominationForm[];
 }
 
 const NominationPositionsList: React.FC<NominationPositionsListProps> = ({
@@ -20,18 +15,24 @@ const NominationPositionsList: React.FC<NominationPositionsListProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPosition, setSelectedPosition] =
-    useState<NominationPosition | null>(null);
+  const [selectedPositionId, setSelectedPositionId] = useState<string | null>(
+    null
+  );
 
   const filteredPositions = positions.filter(
     (position) =>
-      position.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      position.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       position.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleRequestForm = (position: NominationPosition) => {
-    setSelectedPosition(position);
+  const handleRequestForm = (positionId: string) => {
+    setSelectedPositionId(positionId);
     setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPositionId(null);
   };
 
   return (
@@ -39,7 +40,7 @@ const NominationPositionsList: React.FC<NominationPositionsListProps> = ({
       <div className="mb-6 flex items-center justify-center">
         <Input
           startContent={<FaSearch className="text-[#8B0000]" />}
-          placeholder="Search positions..."
+          placeholder="Search nominations..."
           className="max-w-xs"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -55,16 +56,18 @@ const NominationPositionsList: React.FC<NominationPositionsListProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {filteredPositions.map((position) => (
             <Card key={position.id} className="bg-white shadow-lg">
-              <CardBody>
+              <CardBody className="flex flex-col justify-center items-center">
                 <FaTrophy className="text-4xl text-[#8B0000] mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{position.title}</h3>
-                <p className="text-gray-600">{position.description}</p>
+                <h3 className="text-xl font-semibold mb-2">{position.name}</h3>
+                <p className="text-gray-600 text-center">
+                  {position.description}
+                </p>
               </CardBody>
-              <CardFooter>
+              <CardFooter className="flex justify-center">
                 <Button
                   color="primary"
-                  className="bg-[#8B0000] text-white"
-                  onClick={() => handleRequestForm(position)}
+                  className="bg-[#8B0000] text-white w-[200px]"
+                  onClick={() => handleRequestForm(position.id)}
                 >
                   Request Form
                 </Button>
@@ -73,12 +76,12 @@ const NominationPositionsList: React.FC<NominationPositionsListProps> = ({
           ))}
         </div>
       )}
-      
+
       {isModalOpen && (
         <RequestFormModal
           isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-          position={selectedPosition}
+          onClose={handleCloseModal}
+          positionId={selectedPositionId}
         />
       )}
     </>

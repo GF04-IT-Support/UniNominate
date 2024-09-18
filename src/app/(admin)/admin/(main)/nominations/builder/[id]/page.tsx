@@ -1,5 +1,5 @@
 import NominationFormBuilder from "@/components/pages/admin/nominations/NominationFormBuilder";
-import { getNominationForm } from "@/services/nominationService";
+import { getNominationForm } from "@/services/admin/nominationService";
 
 export default async function NominationEditorPage({
   params,

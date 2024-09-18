@@ -3,6 +3,9 @@
 import prisma from "@/utils/prisma";
 import { NominationFormInput } from "@/types/nominationTypes";
 import { revalidatePath } from "next/cache";
+import { NominationRequestStatus } from "@prisma/client";
+import { encrypt, decrypt } from "@/utils/encryption";
+import { sendApprovalEmail } from "@/utils/email";
 
 export async function createNomination(data: NominationFormInput) {
   try {
@@ -82,5 +85,70 @@ export async function getNominationsForForm(formId: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get nominations for the form");
+  }
+}
+
+export async function approveNominationRequest(nominationId: string) {
+  try {
+    // Add a 5-second delay
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    // Simply return without performing any action
+    return;
+    const nomination = await prisma.nomination.update({
+      where: { id: nominationId },
+      data: {
+        requestStatus: NominationRequestStatus.APPROVED,
+      },
+    });
+
+    const token = encrypt(nominationId);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await prisma.nomination.update({
+      where: { id: nominationId },
+      data: { token, expiresAt },
+    });
+
+    const formUrl = `${process.env.BASE_URL}/nomination-form/${token}`;
+    console.log(formUrl);
+
+    await sendApprovalEmail(
+      nomination.nominatorEmail,
+      nomination.nominatorName,
+      formUrl
+    );
+
+    revalidatePath("/admin/nominations");
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to approve nomination request");
+  }
+}
+
+export async function rejectNominationRequest(nominationId: string) {
+  try {
+
+     // Add a 5-second delay
+     await new Promise(resolve => setTimeout(resolve, 5000));
+
+     // Simply return without performing any action
+     return;
+     
+    const nomination = await prisma.nomination.update({
+      where: { id: nominationId },
+      data: {
+        requestStatus: NominationRequestStatus.REJECTED,
+      },
+    });
+
+    revalidatePath("/admin/nominations");
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to reject nomination request");
   }
 }

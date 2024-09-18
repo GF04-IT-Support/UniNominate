@@ -1,28 +1,11 @@
 import React from "react";
 import HowItWorks from "@/components/pages/root/home/HowItWorks";
 import NominationPositionsList from "@/components/pages/root/nominations/NominationPositionsList";
+import { getNominationPositions } from "@/services/public/nominationService";
 
-// This would typically come from an API or database
-const nominationPositions = [
-  {
-    id: 1,
-    title: "SRC President",
-    description: "Lead the Student Representative Council",
-  },
-  {
-    id: 2,
-    title: "Hall Representative",
-    description: "Represent your hall in student affairs",
-  },
-  {
-    id: 3,
-    title: "Department Representative",
-    description: "Voice for your academic department",
-  },
-  // Add more positions as needed
-];
 
-export default function NominationsPage() {
+export default async function NominationsPage() {
+  const nominationPositions = await getNominationPositions();
   return (
     <div>
       <div className="bg-[#8B0000] text-white py-16">

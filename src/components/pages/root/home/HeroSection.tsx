@@ -3,8 +3,10 @@
 import React from "react";
 import { Button } from "@nextui-org/react";
 import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const HeroSection = () => {
+  const router = useRouter();
   return (
     <div className="bg-[#8B0000] text-white py-20">
       <div className="container mx-auto px-4">
@@ -17,6 +19,7 @@ const HeroSection = () => {
           endContent={<FaArrowRight />}
           size="lg"
           className="hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer bg-white text-[#8B0000] font-bold"
+          onClick={() => router.push("/nominations")}
         >
           View Open Positions
         </Button>

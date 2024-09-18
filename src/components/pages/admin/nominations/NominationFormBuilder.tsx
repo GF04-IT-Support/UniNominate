@@ -7,7 +7,7 @@ import "survey-creator-core/survey-creator-core.min.css";
 import {
   createNomination,
   updateNomination,
-} from "@/services/nominationService";
+} from "@/services/admin/nominationService";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useNominationStore } from "@/store/useNominationStore";

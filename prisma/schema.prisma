@@ -34,12 +34,13 @@ model Nomination {
   id                  String                    @id @default(cuid()) @map("_id")
   nominatorName       String
   nominatorEmail      String
+  reason              String
   requestStatus       NominationRequestStatus   @default(PENDING_APPROVAL)
   submissionStatus    NominationSubmissionStatus @default(NOT_SUBMITTED)
   submissionData      Json?
-  token               String                    @unique
-  isTokenValid        Boolean                   @default(true)
-  expiresAt           DateTime
+  token               String?                   @unique
+  isTokenValid        Boolean?                  
+  expiresAt           DateTime?
   createdAt           DateTime                  @default(now())
   updatedAt           DateTime                  @updatedAt
   formId              String

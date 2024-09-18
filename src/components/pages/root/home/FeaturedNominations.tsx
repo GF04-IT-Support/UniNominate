@@ -26,13 +26,13 @@ const FeaturedNominations = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {nominations.map((nom, index) => (
           <Card key={index} className="bg-white shadow-lg">
-            <CardBody>
+            <CardBody className="flex flex-col justify-center items-center">
               <FaTrophy className="text-4xl text-[#8B0000] mb-4" />
               <h3 className="text-xl font-semibold mb-2">{nom.title}</h3>
-              <p className="text-gray-600">{nom.description}</p>
+              <p className="text-gray-600 text-center">{nom.description}</p>
             </CardBody>
-            <CardFooter>
-              <Button color="primary" className="bg-[#8B0000]">
+            <CardFooter className="flex justify-center">
+              <Button color="primary" className="bg-[#8B0000] w-[200px]">
                 Request Form
               </Button>
             </CardFooter>

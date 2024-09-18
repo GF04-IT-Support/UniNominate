@@ -17,9 +17,18 @@ import {
   Pagination,
   Spinner,
 } from "@nextui-org/react";
-import useSWR from "swr";
-import { Nomination } from "@prisma/client";
-import { getNominationsForForm } from "@/services/nominationService";
+import useSWR, { mutate } from "swr";
+import { Nomination, NominationRequestStatus } from "@prisma/client";
+import {
+  approveNominationRequest,
+  getNominationsForForm,
+  rejectNominationRequest,
+} from "@/services/admin/nominationService";
+import { MdCheck, MdClose, MdVisibility } from "react-icons/md";
+import { FaUser, FaClock, FaClipboard, FaInfoCircle } from "react-icons/fa";
+import { Chip } from "@nextui-org/react";
+import toast from "react-hot-toast";
+import NominationActionButtons from "./NominationActionButtons";
 
 interface NominationTableProps {
   formId: string;
@@ -33,6 +42,9 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
   const { data: nominations, error, isLoading } = useSWR(formId, fetcher);
   const rowsPerPage = 10;
   const [page, setPage] = useState(1);
+  const [actionLoading, setActionLoading] = useState<
+    Record<string, { approve: boolean; reject: boolean }>
+  >({});
 
   const pages = Math.ceil(nominations?.length! / rowsPerPage || 1);
 
@@ -43,13 +55,49 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
     return nominations?.slice(start, end);
   }, [page, nominations]);
 
-  const handleApprove = (id: string) => {
-    // Implement approval logic
+  const handleApprove = async (id: string) => {
+    try {
+      setActionLoading((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], approve: true },
+      }));
+      await approveNominationRequest(id);
+      toast.success("Nomination request approved successfully");
+      mutate(formId);
+    } catch (error) {
+      console.error("Error approving nomination:", error);
+      toast.error("Failed to approve nomination request");
+    } finally {
+      setActionLoading((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], approve: false },
+      }));
+      setSelectedNomination(null);
+    }
   };
 
-  const handleReject = (id: string) => {
-    // Implement rejection logic
+  const handleReject = async (id: string) => {
+    try {
+      setActionLoading((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], reject: true },
+      }));
+      await rejectNominationRequest(id);
+      toast.success("Nomination request rejected successfully");
+      mutate(formId);
+    } catch (error) {
+      console.error("Error rejecting nomination:", error);
+      toast.error("Failed to reject nomination request");
+    } finally {
+      setActionLoading((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], reject: false },
+      }));
+      setSelectedNomination(null);
+    }
   };
+
+  console.log(actionLoading);
 
   const handleSeeDetails = (nomination: Nomination) => {
     setSelectedNomination(nomination);
@@ -86,8 +134,7 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
         <TableHeader>
           <TableColumn key="nominatorName">Nominator</TableColumn>
           <TableColumn key="nominatorEmail">Email</TableColumn>
-          <TableColumn key="status">Status</TableColumn>
-          <TableColumn key="createdAt">Requested At</TableColumn>
+          <TableColumn key="createdAt">Request Time</TableColumn>
           <TableColumn key="actions">Actions</TableColumn>
         </TableHeader>
         <TableBody
@@ -100,28 +147,26 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
             <TableRow key={item.id}>
               <TableCell>{item.nominatorName}</TableCell>
               <TableCell>{item.nominatorEmail}</TableCell>
-              <TableCell>{item.requestStatus}</TableCell>
               <TableCell>
                 {new Date(item.createdAt).toLocaleDateString()}
               </TableCell>
-              <TableCell>
+              <TableCell className="flex gap-2">
+                <NominationActionButtons
+                  id={item.id}
+                  requestStatus={item.requestStatus}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                  isLoadingApprove={actionLoading[item.id]?.approve}
+                  isLoadingReject={actionLoading[item.id]?.reject}
+                />
                 <Button
                   size="sm"
-                  color="success"
-                  onClick={() => handleApprove(item.id)}
-                >
-                  Approve
-                </Button>
-                <Button
-                  size="sm"
-                  color="danger"
-                  onClick={() => handleReject(item.id)}
-                >
-                  Reject
-                </Button>
-                <Button size="sm" onClick={() => handleSeeDetails(item)}>
-                  See Details
-                </Button>
+                  onClick={() => handleSeeDetails(item)}
+                  isIconOnly
+                  startContent={<MdVisibility size={20} />}
+                  variant="light"
+                  className="text-[#8B0000]"
+                />
               </TableCell>
             </TableRow>
           )}
@@ -131,31 +176,100 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
       <Modal
         isOpen={!!selectedNomination}
         onClose={() => setSelectedNomination(null)}
+        size="lg"
       >
         <ModalContent>
-          <ModalHeader>Nomination Details</ModalHeader>
-          <ModalBody>
-            {selectedNomination && (
-              <div>
-                <p>Nominator: {selectedNomination.nominatorName}</p>
-                <p>Email: {selectedNomination.nominatorEmail}</p>
-                <p>Status: {selectedNomination.requestStatus}</p>
-                <p>
-                  Created At:{" "}
-                  {new Date(selectedNomination.createdAt).toLocaleString()}
-                </p>
-                <p>
-                  Submission Data:{" "}
-                  {JSON.stringify(selectedNomination.submissionData, null, 2)}
-                </p>
-              </div>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" onClick={() => setSelectedNomination(null)}>
-              Close
-            </Button>
-          </ModalFooter>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h2 className="text-2xl font-bold text-[#8B0000]">
+                  Nomination Request
+                </h2>
+              </ModalHeader>
+              <ModalBody>
+                {selectedNomination && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-[#8B0000] rounded-full p-3">
+                        <FaUser className="text-white text-2xl" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold">
+                          {selectedNomination.nominatorName}
+                        </h3>
+                        <p className="text-gray-600">
+                          {selectedNomination.nominatorEmail}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                        <FaClock className="text-[#8B0000]" />
+                        Request Time
+                      </h4>
+                      <p>
+                        {new Intl.DateTimeFormat("en-US", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(new Date(selectedNomination.createdAt))}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                        <FaClipboard className="text-[#8B0000]" />
+                        Reason for Nomination
+                      </h4>
+                      <p className="bg-gray-100 p-3 rounded-md">
+                        {selectedNomination.reason}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                        <FaInfoCircle className="text-[#8B0000]" />
+                        Status
+                      </h4>
+                      <Chip
+                        color={
+                          selectedNomination.requestStatus ===
+                          NominationRequestStatus.APPROVED
+                            ? "success"
+                            : "danger"
+                        }
+                      >
+                        {selectedNomination.requestStatus}
+                      </Chip>
+                    </div>
+                  </div>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                {selectedNomination &&
+                  selectedNomination.requestStatus ===
+                    NominationRequestStatus.PENDING_APPROVAL && (
+                    <NominationActionButtons
+                      id={selectedNomination.id}
+                      requestStatus={selectedNomination.requestStatus}
+                      onApprove={(id) => {
+                        handleApprove(id);
+                      }}
+                      onReject={(id) => {
+                        handleReject(id);
+                      }}
+                      isLoadingApprove={
+                        actionLoading[selectedNomination.id]?.approve
+                      }
+                      isLoadingReject={
+                        actionLoading[selectedNomination.id]?.reject
+                      }
+                    />
+                  )}
+              </ModalFooter>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </>

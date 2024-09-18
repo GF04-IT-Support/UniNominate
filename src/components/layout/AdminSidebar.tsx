@@ -10,7 +10,7 @@ import { MdLogout } from "react-icons/md";
 import { FaBars } from "react-icons/fa";
 import { Drawer } from "@mui/material";
 import { toast } from "react-hot-toast";
-import { logoutAdmin } from "@/services/authService";
+import { logoutAdmin } from "@/services/admin/authService";
 import { useSession } from "next-auth/react";
 
 const AdminSidebar = () => {

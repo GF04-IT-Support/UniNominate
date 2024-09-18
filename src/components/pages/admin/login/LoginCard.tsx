@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { loginAdmin } from "@/services/authService";
+import { loginAdmin } from "@/services/admin/authService";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
