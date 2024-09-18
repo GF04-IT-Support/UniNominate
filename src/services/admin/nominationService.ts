@@ -90,15 +90,14 @@ export async function getNominationsForForm(formId: string) {
 
 export async function approveNominationRequest(nominationId: string) {
   try {
-    // Add a 5-second delay
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    // await new Promise(resolve => setTimeout(resolve, 5000));
 
-    // Simply return without performing any action
-    return;
+    // return;
     const nomination = await prisma.nomination.update({
       where: { id: nominationId },
       data: {
         requestStatus: NominationRequestStatus.APPROVED,
+        isTokenValid: true,
       },
     });
 
@@ -130,13 +129,10 @@ export async function approveNominationRequest(nominationId: string) {
 
 export async function rejectNominationRequest(nominationId: string) {
   try {
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
 
-     // Add a 5-second delay
-     await new Promise(resolve => setTimeout(resolve, 5000));
+    // return;
 
-     // Simply return without performing any action
-     return;
-     
     const nomination = await prisma.nomination.update({
       where: { id: nominationId },
       data: {
