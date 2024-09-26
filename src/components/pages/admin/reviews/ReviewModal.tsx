@@ -10,14 +10,20 @@ import {
 import { Model } from "survey-core";
 import { Survey } from "survey-react-ui";
 import "survey-core/defaultV2.css";
-import { NominationSubmissionStatus } from "@prisma/client";
+import {
+  Nomination,
+  NominationForm,
+  NominationSubmissionStatus,
+} from "@prisma/client";
 import { updateNominationStatus } from "@/services/admin/reviewService";
 import { toast } from "react-hot-toast";
 
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  nomination: any;
+  nomination: Nomination & {
+    form: NominationForm;
+  };
   onStatusChange: (status: NominationSubmissionStatus) => void;
 }
 

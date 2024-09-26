@@ -1,8 +1,11 @@
 import React from "react";
 import ReviewCard from "./ReviewCard";
+import { Nomination, NominationForm } from "@prisma/client";
 
 interface ReviewCardListProps {
-  nominations: any[];
+  nominations: (Nomination & {
+    form: NominationForm;
+  })[];
 }
 
 const ReviewCardList: React.FC<ReviewCardListProps> = ({ nominations }) => {

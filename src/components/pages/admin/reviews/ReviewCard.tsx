@@ -1,11 +1,24 @@
 import React, { useState } from "react";
-import { Card, CardBody, CardFooter, Button, Chip } from "@nextui-org/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  Button,
+  Chip,
+  CardHeader,
+} from "@nextui-org/react";
 import ReviewModal from "./ReviewModal";
-import { NominationSubmissionStatus } from "@prisma/client";
+import {
+  Nomination,
+  NominationForm,
+  NominationSubmissionStatus,
+} from "@prisma/client";
 import { updateNominationStatus } from "@/services/admin/reviewService";
 
 interface ReviewCardProps {
-  nomination: any;
+  nomination: Nomination & {
+    form: NominationForm;
+  };
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ nomination }) => {
@@ -51,19 +64,19 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ nomination }) => {
   };
 
   const showReviewButton = ![
-    NominationSubmissionStatus.NOT_SUBMITTED,
-    NominationSubmissionStatus.ACCEPTED,
-    NominationSubmissionStatus.REJECTED,
+    "NOT_SUBMITTED" as NominationSubmissionStatus,
+    "ACCEPTED" as NominationSubmissionStatus,
+    "REJECTED" as NominationSubmissionStatus,
   ].includes(status);
 
   return (
     <>
       <Card
-        className="w-[350px] max-h-[200px] flex flex-col gap-4"
+        className="w-[350px] h-[300px] flex flex-col gap-4"
         isBlurred
         radius="sm"
       >
-        <CardBody className="flex-grow">
+        <CardBody className="pb-0">
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-lg font-semibold">
               {nomination.nominatorName}
@@ -72,22 +85,27 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ nomination }) => {
           <p className="text-sm text-gray-600 mb-2">
             {nomination.nominatorEmail}
           </p>
+          <p className="text-sm text-gray-600 mb-2 overflow-y-auto">
+            {nomination.reason}
+          </p>
+        </CardBody>
+        <CardFooter className="flex flex-col gap-4 pt-0 flex-shrink-0">
           <Chip color={getStatusColor()} className="mx-auto mt-4">
             {status}
           </Chip>
-        </CardBody>
-        <CardFooter className="flex justify-center my-auto">
-          {showReviewButton && (
-            <Button
-              onClick={handleReviewClick}
-              isLoading={isLoading}
-              className="w-[200px] bg-[#8B0000] text-white"
-            >
-              {status === NominationSubmissionStatus.SUBMITTED
-                ? "Start Review"
-                : "Continue Review"}
-            </Button>
-          )}
+          <div className="flex justify-center">
+            {showReviewButton && (
+              <Button
+                onClick={handleReviewClick}
+                isLoading={isLoading}
+                className="w-[200px] bg-[#8B0000] text-white"
+              >
+                {status === NominationSubmissionStatus.SUBMITTED
+                  ? "Start Review"
+                  : "Continue Review"}
+              </Button>
+            )}
+          </div>
         </CardFooter>
       </Card>
       <ReviewModal

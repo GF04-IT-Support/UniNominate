@@ -33,12 +33,7 @@ export async function getNominationsForReview(formId: string) {
         requestStatus: NominationRequestStatus.APPROVED,
       },
       include: {
-        form: {
-          select: {
-            name: true,
-            formStructure: true,
-          },
-        },
+        form: true,
       },
     });
     return nominations;

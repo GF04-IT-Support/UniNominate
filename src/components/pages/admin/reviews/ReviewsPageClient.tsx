@@ -5,10 +5,13 @@ import { Select, SelectItem, Spinner } from "@nextui-org/react";
 import useSWR from "swr";
 import { getNominationsForReview } from "@/services/admin/reviewService";
 import ReviewCardList from "./ReviewCardList";
+import { Nomination, NominationForm } from "@prisma/client";
 
 interface ReviewsPageClientProps {
   initialNominationForms: { id: string; name: string }[];
-  initialNominations: any[];
+  initialNominations: (Nomination & {
+    form: NominationForm;
+  })[];
 }
 
 const ReviewsPageClient: React.FC<ReviewsPageClientProps> = ({
