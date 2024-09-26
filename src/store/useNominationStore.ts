@@ -9,6 +9,7 @@ interface NominationStore {
 }
 
 const initialNomination: NominationFormInput = {
+  id: "",
   name: "",
   description: "",
   formStructure: {},

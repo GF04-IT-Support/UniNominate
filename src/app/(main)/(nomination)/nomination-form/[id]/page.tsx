@@ -20,7 +20,11 @@ export default async function NominationFormPage({
 
     return (
       <div className="mx-auto py-8">
-        <NominationForm nominationId={nomination.id} formData={formData} />
+        <NominationForm
+          nominationId={nomination.id}
+          formData={formData}
+          submissionStatus={nomination.submissionStatus}
+        />
       </div>
     );
   } catch (error) {

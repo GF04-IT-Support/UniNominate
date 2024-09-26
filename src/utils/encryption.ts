@@ -15,12 +15,12 @@ export function encrypt(text: string): string {
   );
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return Buffer.concat([iv, encrypted]).toString("base64");
+  return Buffer.concat([iv, encrypted]).toString("base64url");
 }
 
 export function decrypt(text: string): string | null {
   try {
-    const buf = Buffer.from(text, "base64");
+    const buf = Buffer.from(text, "base64url");
     const iv = buf.subarray(0, IV_LENGTH);
     const encryptedText = buf.subarray(IV_LENGTH);
     const decipher = crypto.createDecipheriv(

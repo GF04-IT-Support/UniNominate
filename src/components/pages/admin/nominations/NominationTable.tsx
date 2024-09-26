@@ -97,7 +97,6 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
     }
   };
 
-  console.log(actionLoading);
 
   const handleSeeDetails = (nomination: Nomination) => {
     setSelectedNomination(nomination);
@@ -127,7 +126,7 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
           )
         }
         classNames={{
-          table: isLoading || isEmpty ? "min-h-[400px]" : "",
+          table: isLoading || isEmpty ? "min-h-[200px]" : "",
           th: "text-[#8B0000] font-bold text-sm rounded-none",
         }}
       >
@@ -139,7 +138,7 @@ const NominationTable: React.FC<NominationTableProps> = ({ formId }) => {
         </TableHeader>
         <TableBody
           emptyContent={"No nominations requested."}
-          loadingContent={<Spinner />}
+          loadingContent={<Spinner color="danger" />}
           loadingState={loadingState}
           items={isEmpty ? [] : items}
         >

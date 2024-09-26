@@ -9,7 +9,7 @@ import {
   updateNomination,
 } from "@/services/admin/nominationService";
 import { toast } from "react-hot-toast";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useNominationStore } from "@/store/useNominationStore";
 import { Button, Spinner } from "@nextui-org/react";
 
@@ -32,10 +32,11 @@ const NominationFormBuilder: React.FC<NominationFormBuilderProps> = ({
   useEffect(() => {
     if (!creatorRef.current) {
       const newCreator = new SurveyCreator({
-        showLogicTab: true,
+        // showLogicTab: true,
         showTranslationTab: true,
         isAutoSave: true,
       });
+
 
       const initializeCreator = () => {
         if (nomination.formStructure && params.id === nomination.id) {
@@ -73,6 +74,7 @@ const NominationFormBuilder: React.FC<NominationFormBuilderProps> = ({
         const checkNomination = setInterval(() => {
           if (nomination.id !== undefined) {
             clearInterval(checkNomination);
+            console.log("Nomination data is available");
             initializeCreator();
           }
         }, 100);
@@ -80,7 +82,7 @@ const NominationFormBuilder: React.FC<NominationFormBuilderProps> = ({
         initializeCreator();
       }
     }
-  }, [params.id, initialData, setNomination, resetNomination, nomination]);
+  }, [params.id, initialData, nomination]);
 
   const handleSave = async () => {
     if (!creator) return;
@@ -122,8 +124,8 @@ const NominationFormBuilder: React.FC<NominationFormBuilderProps> = ({
   }
 
   return (
-    <div className="w-full h-screen flex flex-col pb-4">
-      <div className="p-4 mb-2 flex justify-end">
+    <div className="w-full h-screen flex flex-col">
+      <div className="p-4 mb-4 flex justify-end">
         <Button
           onClick={handleSave}
           radius="sm"

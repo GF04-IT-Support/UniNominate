@@ -30,7 +30,10 @@ const Nominations: React.FC<NominationsProps> = ({ nominations }) => {
           </Button>
         </Link>
       </div>
-      <Accordion variant="splitted">
+      <Accordion
+        variant="splitted"
+        defaultExpandedKeys={nominations.length > 0 ? [nominations[0].id!] : []}
+      >
         {nominations.map((nomination) => (
           <AccordionItem
             key={nomination.id}
