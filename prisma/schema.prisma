@@ -61,12 +61,12 @@ model Review {
 }
 
 model AdminAction {
-  id         String   @id @default(cuid()) @map("_id")
-  actionType String
+  id         String          @id @default(cuid()) @map("_id")
+  actionType AdminActionType
   details    String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime        @default(now())
   adminId    String
-  admin      Admin    @relation(fields: [adminId], references: [id])
+  admin      Admin           @relation(fields: [adminId], references: [id])
 }
 
 enum AdminRole {
@@ -92,4 +92,13 @@ enum NominationSubmissionStatus {
 enum Decision {
   APPROVE
   REJECT
+}
+
+enum AdminActionType {
+  CREATE_NOMINATION_FORM
+  UPDATE_NOMINATION_FORM
+  APPROVE_NOMINATION_REQUEST
+  REJECT_NOMINATION_REQUEST
+  START_REVIEW
+  COMPLETE_REVIEW
 }

@@ -10,6 +10,7 @@ export default async function ReviewsPage() {
     nominationForms[0]?.id
   );
 
+
   return (
     <ReviewsPageClient
       initialNominationForms={nominationForms}

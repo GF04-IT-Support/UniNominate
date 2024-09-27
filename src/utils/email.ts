@@ -38,7 +38,8 @@ export async function sendApprovalEmail(
 
 export async function sendNominationAcceptedEmail(
   to: string,
-  nominatorName: string
+  nominatorName: string,
+  comment: string
 ) {
   try {
     const { data, error } = await resend.emails.send({
@@ -49,6 +50,7 @@ export async function sendNominationAcceptedEmail(
         <h1>Congratulations ${nominatorName}!</h1>
         <p>We're pleased to inform you that your nomination has been accepted!</p>
         <p>This is an important milestone in the nomination process. We appreciate your participation and look forward to the next steps.</p>
+        <p>Review Comment: <p style="font-weight: bold; color: gray; font-style: italic;">${comment}</p></p>
         <p>If you have any questions or need further information, please don't hesitate to contact us.</p>
         <p>Best regards,<br>The Nominations Team</p>
       `,
@@ -67,7 +69,8 @@ export async function sendNominationAcceptedEmail(
 
 export async function sendNominationRejectedEmail(
   to: string,
-  nominatorName: string
+  nominatorName: string,
+  comment: string
 ) {
   try {
     const { data, error } = await resend.emails.send({
@@ -78,6 +81,7 @@ export async function sendNominationRejectedEmail(
         <h1>Dear ${nominatorName},</h1>
         <p>We regret to inform you that your nomination has not been accepted at this time.</p>
         <p>We appreciate your participation in the nomination process and encourage you to consider future opportunities.</p>
+        <p>Review Comment: <p style="font-weight: bold; color: gray; font-style: italic;">${comment}</p></p>
         <p>If you have any questions or would like feedback, please don't hesitate to contact us.</p>
         <p>Thank you for your understanding.</p>
         <p>Best regards,<br>The Nominations Team</p>

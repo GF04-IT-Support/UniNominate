@@ -108,12 +108,14 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ nomination }) => {
           </div>
         </CardFooter>
       </Card>
-      <ReviewModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        nomination={nomination}
-        onStatusChange={handleStatusChange}
-      />
+      {isModalOpen && (
+        <ReviewModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          nomination={nomination}
+          onStatusChange={handleStatusChange}
+        />
+      )}
     </>
   );
 };
