@@ -5,6 +5,7 @@ import {
   MdRateReview,
   MdAssessment,
   MdSettings,
+  MdPeople,
 } from "react-icons/md";
 
 export const adminRoutes = [
@@ -27,6 +28,11 @@ export const adminRoutes = [
     name: "Reports",
     path: "/admin/reports",
     icon: MdAssessment,
+  },
+  {
+    name: "Admins",
+    path: "/admin/manage-admins",
+    icon: MdPeople,
   },
   {
     name: "Settings",
