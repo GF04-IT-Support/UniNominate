@@ -10,7 +10,7 @@ interface ReviewCardListProps {
 
 const ReviewCardList: React.FC<ReviewCardListProps> = ({ nominations }) => {
   return (
-    <div className="flex flex-col gap-4 flex-wrap">
+    <div className="flex flex-row gap-4 flex-wrap">
       {nominations.map((nomination) => (
         <ReviewCard key={nomination.id} nomination={nomination} />
       ))}

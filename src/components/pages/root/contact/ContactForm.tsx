@@ -1,10 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Input, Textarea, Button, Select, SelectItem } from "@nextui-org/react";
+import { sendEnquiryEmail } from "@/utils/email";
+import toast from "react-hot-toast";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -16,17 +18,27 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const ContactForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-    // Here you would typically send the data to your backend
+  const onSubmit = async (data: FormData) => {
+    setIsLoading(true);
+    try {
+      await sendEnquiryEmail(data.name, data.email, data.subject, data.message);
+      toast.success("Your message has been sent successfully!");
+      reset();
+    } catch (error) {
+      toast.error("Failed to send message. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -94,8 +106,13 @@ const ContactForm = () => {
         )}
       />
       <div className="flex justify-center">
-        <Button type="submit" color="primary" className="bg-[#8B0000] w-[200px]">
-          Send Message
+        <Button
+          type="submit"
+          color="primary"
+          className="bg-[#8B0000] w-[200px]"
+          isLoading={isLoading}
+        >
+          {isLoading ? "Sending..." : "Send Message"}
         </Button>
       </div>
     </form>

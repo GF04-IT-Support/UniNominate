@@ -19,6 +19,7 @@ import { updateNominationStatus } from "@/services/admin/reviewService";
 import { toast } from "react-hot-toast";
 import CommentForm from "./CommentForm";
 import ActionButtons from "./ActionButtons";
+import * as SurveyPDF from "survey-pdf";
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -59,7 +60,9 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     const setLoading = isApproving ? setIsApproving : setIsRejecting;
     setLoading(true);
 
-    toast.loading(isApproving ? "Approving nomination..." : "Rejecting nomination...");
+    toast.loading(
+      isApproving ? "Approving nomination..." : "Rejecting nomination..."
+    );
 
     try {
       await updateNominationStatus(nomination.id, pendingStatus, data.comment);
@@ -84,6 +87,58 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     }
   };
 
+  const handlePrintPDF = async () => {
+    const pdfDocOptions = {
+      fontSize: 12,
+      margins: {
+        left: 10,
+        right: 10,
+        top: 10,
+        bot: 10,
+      },
+      compress: true,
+      textRenderingMode: "fill-then-stroke",
+    };
+  
+    // Function to convert base64 to Blob
+    const base64toBlob = (base64: string, contentType = '') => {
+      const byteCharacters = atob(base64.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      return new Blob([byteArray], { type: contentType });
+    };
+  
+    // Clone the submission data to avoid modifying the original
+    const processedData = JSON.parse(JSON.stringify(nomination.submissionData));
+  
+    // Recursively process the data to convert base64 to Blob
+    const processObject = async (obj: any) => {
+      for (const key in obj) {
+        if (typeof obj[key] === 'string' && obj[key].startsWith('data:')) {
+          // This looks like a base64 encoded file
+          const contentType = obj[key].split(';')[0].split(':')[1];
+          const blob = base64toBlob(obj[key], contentType);
+          obj[key] = URL.createObjectURL(blob);
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+          await processObject(obj[key]);
+        }
+      }
+    };
+  
+    await processObject(processedData);
+  
+    const surveyPDF = new SurveyPDF.SurveyPDF(
+      nomination.form.formStructure,
+      pdfDocOptions
+    );
+    surveyPDF.data = processedData;
+  
+    surveyPDF.save(`${nomination.nominatorName}_nomination.pdf`);
+  };
+
   return (
     <>
       <Modal
@@ -94,8 +149,15 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         scrollBehavior="inside"
       >
         <ModalContent>
-          <ModalHeader className="text-4xl font-bold text-[#8B0000] mx-auto">
-            Nomination Review
+          <ModalHeader className="text-4xl font-bold w-full text-[#8B0000] mx-auto flex justify-between items-center">
+            <span className="flex-grow text-center">Nomination Review</span>
+            <Button
+              color="primary"
+              onClick={handlePrintPDF}
+              className="bg-[#8B0000] text-white mr-6 w-40"
+            >
+              Download
+            </Button>
           </ModalHeader>
           <ModalBody>
             <Survey model={survey} />

@@ -45,6 +45,7 @@
     "resend": "^4.0.0",
     "survey-core": "^1.12.1",
     "survey-creator-react": "^1.12.1",
+    "survey-pdf": "^1.12.4",
     "survey-react-ui": "^1.12.1",
     "swr": "^2.2.5",
     "tailwindcss-animate": "^1.0.7",

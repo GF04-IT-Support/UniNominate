@@ -130,3 +130,37 @@ export async function sendAdminCredentialsEmail(
     throw new Error("Failed to send admin credentials email");
   }
 }
+
+export async function sendEnquiryEmail(
+  name: string,
+  email: string,
+  subject: string,
+  message: string
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "KNOMS <onboarding@resend.dev>",
+      to: ["isinesam@gmail.com"],
+      subject: `New Enquiry: ${subject}`,
+      html: `
+        <h1>New Enquiry from KNOMS Contact Form</h1>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <h2>Message:</h2>
+        <p>${message}</p>
+        <hr>
+        <p>This enquiry was sent from the KNOMS contact form. Please respond to the user's email address provided above.</p>
+      `,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Failed to send enquiry email:", error);
+    throw new Error("Failed to send enquiry email");
+  }
+}

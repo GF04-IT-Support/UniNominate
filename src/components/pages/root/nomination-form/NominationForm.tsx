@@ -7,6 +7,7 @@ import "survey-core/defaultV2.css";
 import { saveNominationSubmission } from "@/services/nominationService";
 import toast from "react-hot-toast";
 import NominationStatus from "./NominationStatus";
+import { useRouter } from "next/navigation";
 
 interface NominationFormProps {
   nominationId: string;
@@ -20,6 +21,7 @@ const NominationForm: React.FC<NominationFormProps> = ({
   submissionStatus,
 }) => {
   const [survey, setSurvey] = useState<Model | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (submissionStatus === "NOT_SUBMITTED") {
@@ -40,6 +42,7 @@ const NominationForm: React.FC<NominationFormProps> = ({
 
   const onComplete = async (survey: any) => {
     try {
+      toast.loading("Submitting nomination...");
       const submissionData = {
         nominationId,
         submissionData: survey.data,
@@ -48,10 +51,14 @@ const NominationForm: React.FC<NominationFormProps> = ({
 
       await saveNominationSubmission(submissionData);
       localStorage.removeItem(`nomination_${nominationId}`);
+      toast.dismiss();
       toast.success("Nomination submitted successfully");
     } catch (error) {
       console.error("Error saving survey results:", error);
+      toast.dismiss();
       toast.error("Error saving survey results");
+    }finally{
+      router.refresh()
     }
   };
 
