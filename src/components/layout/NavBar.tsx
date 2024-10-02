@@ -69,9 +69,9 @@ export default function NavBar() {
 
       <NavbarContent justify="end">
         <NavbarItem>
-          <Button isIconOnly variant="light" aria-label="Search">
+          {/* <Button isIconOnly variant="light" aria-label="Search">
             <FaSearch className="text-white" />
-          </Button>
+          </Button> */}
         </NavbarItem>
       </NavbarContent>
 

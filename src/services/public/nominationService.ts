@@ -3,9 +3,11 @@
 import prisma from "@/utils/prisma";
 import { decrypt } from "@/utils/encryption";
 
-export async function getNominationPositions() {
+export async function getNominationPositions(limit?: number) {
   try {
-    const positions = await prisma.nominationForm.findMany();
+    const positions = await prisma.nominationForm.findMany({
+      take: limit,
+    });
     return positions;
   } catch (error) {
     console.error(error);

@@ -98,3 +98,35 @@ export async function sendNominationRejectedEmail(
     throw new Error("Failed to send nomination rejected email");
   }
 }
+
+export async function sendAdminCredentialsEmail(
+  to: string,
+  adminName: string,
+  password: string
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "KNOMS <onboarding@resend.dev>",
+      to: ["isinesam@gmail.com"],
+      subject: "Your KNOMS Admin Account Credentials",
+      html: `
+        <h1>Welcome to KNOMS, ${adminName}!</h1>
+        <p>Your admin account has been created. Here are your login credentials:</p>
+        <p><strong>Email:</strong> ${to}</p>
+        <p><strong>Password:</strong> ${password}</p>
+        <p>Please log in and change your password immediately.</p>
+        <p>If you have any questions, please contact the system administrator.</p>
+        <p>Best regards,<br>The KNOMS Team</p>
+      `,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Failed to send admin credentials email:", error);
+    throw new Error("Failed to send admin credentials email");
+  }
+}

@@ -17,7 +17,7 @@ export default function AboutPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         <Card>
           <CardBody>
-            <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Our Mission</h2>
             <p>
               To facilitate a fair and transparent process for nominating and
               selecting student leaders at KNUST.
@@ -26,7 +26,7 @@ export default function AboutPage() {
         </Card>
         <Card>
           <CardBody>
-            <h2 className="text-2xl font-bold mb-4">Our Vision</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Our Vision</h2>
             <p>
               To be the gold standard for student leadership selection in higher
               education institutions across Ghana.
@@ -36,8 +36,10 @@ export default function AboutPage() {
       </div>
 
       <div className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">About the System</h2>
-        <p className="mb-4">
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          About the System
+        </h2>
+        <p className="mb-4 text-center">
           The KNUST Nomination System is a state-of-the-art platform designed to
           streamline the process of nominating and selecting student leaders. It
           provides a fair, transparent, and efficient method for students to
@@ -52,7 +54,7 @@ export default function AboutPage() {
       </div>
 
       <div className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">Key Features</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Key Features</h2>
         <ul className="list-disc pl-6">
           <li>Online nomination submissions</li>
           <li>Transparent review process</li>
@@ -64,11 +66,13 @@ export default function AboutPage() {
       </div>
 
       <div className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">Benefits</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Benefits</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardBody>
-              <h3 className="text-xl font-semibold mb-2">For Students</h3>
+              <h3 className="text-xl font-semibold mb-2 text-center">
+                For Students
+              </h3>
               <ul className="list-disc pl-6">
                 <li>Easy access to leadership opportunities</li>
                 <li>Fair consideration for all nominees</li>
@@ -79,7 +83,9 @@ export default function AboutPage() {
           </Card>
           <Card>
             <CardBody>
-              <h3 className="text-xl font-semibold mb-2">For KNUST</h3>
+              <h3 className="text-xl font-semibold mb-2 text-center">
+                For KNUST
+              </h3>
               <ul className="list-disc pl-6">
                 <li>Identify and nurture future leaders</li>
                 <li>Improve student engagement in governance</li>

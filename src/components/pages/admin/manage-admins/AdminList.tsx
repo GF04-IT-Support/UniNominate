@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -18,66 +18,111 @@ import {
   Button,
 } from "@nextui-org/react";
 import { Admin, AdminRole } from "@prisma/client";
-import AdminSearch from "./AdminSearch"; // Import the AdminSearch component
+import AdminSearch from "./AdminSearch";
 import AddAdminForm from "./AddAdminForm";
 import { MdMoreVert } from "react-icons/md";
+import ConfirmationModal from "./ConfirmationModal";
+import toast from "react-hot-toast";
+import {
+  changeAdminRole,
+  toggleAdminStatus,
+} from "@/services/admin/adminService";
 
 interface AdminListProps {
   initialAdmins: Admin[];
 }
 
 export default function AdminList({ initialAdmins }: AdminListProps) {
-  const [admins, setAdmins] = useState(initialAdmins);
-  const [filteredAdmins, setFilteredAdmins] = useState(initialAdmins);
+  const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+    isLoading: false,
+  });
+  const [keepDropdownOpen, setKeepDropdownOpen] = useState(false);
   const rowsPerPage = 10;
 
-  const filterAdmins = (query: string) => {
-    const filtered = admins.filter((admin) =>
-      admin.email.toLowerCase().includes(query.toLowerCase())
+  const filteredAdmins = useMemo(() => {
+    return initialAdmins.filter((admin) =>
+      admin.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredAdmins(filtered);
-    setPage(1);
-  };
+  }, [initialAdmins, searchQuery]);
 
-  const pages = Math.ceil(filteredAdmins?.length! / rowsPerPage || 1);
+  const pages = Math.ceil(filteredAdmins.length / rowsPerPage);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-
-    return filteredAdmins?.slice(start, end);
+    return filteredAdmins.slice(start, end);
   }, [page, filteredAdmins]);
 
-  const toggleAdminStatus = async (adminId: string) => {
-    // TODO: Implement API call to toggle admin status
-    setAdmins(
-      admins.map((admin) =>
-        admin.id === adminId ? { ...admin, isActive: !admin.isActive } : admin
-      )
-    );
+  const toggleStatus = async (adminId: string) => {
+    setKeepDropdownOpen(true);
+    setConfirmationModal({
+      isOpen: true,
+      title: "Confirm Status Change",
+      message: "Are you sure you want to change this admin's status?",
+      isLoading: false,
+      onConfirm: async () => {
+        setKeepDropdownOpen(false);
+        setConfirmationModal((prev) => ({ ...prev, isLoading: true }));
+        try {
+          await toggleAdminStatus(adminId);
+          toast.success("Admin status updated successfully");
+        } catch (error) {
+          toast.error("Failed to update admin status");
+        } finally {
+          setConfirmationModal((prev) => ({
+            ...prev,
+            isOpen: false,
+            isLoading: false,
+          }));
+        }
+      },
+    });
   };
 
-  const changeAdminRole = async (adminId: string, newRole: AdminRole) => {
-    // TODO: Implement API call to change admin role
-    setAdmins(
-      admins.map((admin) =>
-        admin.id === adminId ? { ...admin, role: newRole } : admin
-      )
-    );
+  const changeRole = async (adminId: string, newRole: AdminRole) => {
+    setKeepDropdownOpen(true);
+    setConfirmationModal({
+      isOpen: true,
+      title: "Confirm Role Change",
+      message: `Are you sure you want to change this admin's role to ${newRole}?`,
+      isLoading: false,
+      onConfirm: async () => {
+        setKeepDropdownOpen(false);
+        setConfirmationModal((prev) => ({ ...prev, isLoading: true }));
+        try {
+          await changeAdminRole(adminId, newRole);
+          toast.success("Admin role updated successfully");
+        } catch (error) {
+          toast.error("Failed to update admin role");
+        } finally {
+          setConfirmationModal((prev) => ({
+            ...prev,
+            isOpen: false,
+            isLoading: false,
+          }));
+        }
+      },
+    });
   };
 
-  useEffect(() => {
-    setFilteredAdmins(admins);
-  }, [admins]);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setPage(1);
+  };
 
-  const isEmpty = !admins || admins?.length === 0;
+  const isEmpty = !items || items.length === 0;
   const loadingState = "idle";
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between gap-4">
-        <AdminSearch onSearch={filterAdmins} />
+        <AdminSearch onSearch={handleSearch} />
         <AddAdminForm />
       </div>
       <Table
@@ -138,7 +183,7 @@ export default function AdminList({ initialAdmins }: AdminListProps) {
                   >
                     <DropdownItem
                       key="toggle-status"
-                      onPress={() => toggleAdminStatus(item.id)}
+                      onPress={() => toggleStatus(item.id)}
                     >
                       {item.isActive ? "Deactivate" : "Activate"}
                     </DropdownItem>
@@ -149,7 +194,7 @@ export default function AdminList({ initialAdmins }: AdminListProps) {
                           {Object.values(AdminRole).map((role) => (
                             <DropdownItem
                               key={role}
-                              onPress={() => changeAdminRole(item.id, role)}
+                              onPress={() => changeRole(item.id, role)}
                             >
                               {role}
                             </DropdownItem>
@@ -164,6 +209,16 @@ export default function AdminList({ initialAdmins }: AdminListProps) {
           )}
         </TableBody>
       </Table>
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={() =>
+          setConfirmationModal((prev) => ({ ...prev, isOpen: false }))
+        }
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        isLoading={confirmationModal.isLoading}
+      />
     </div>
   );
 }
